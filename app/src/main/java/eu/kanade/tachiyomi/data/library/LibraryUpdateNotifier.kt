@@ -37,7 +37,6 @@ import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import java.math.RoundingMode
 import java.text.NumberFormat
 
 class LibraryUpdateNotifier(
@@ -48,7 +47,6 @@ class LibraryUpdateNotifier(
 ) {
 
     private val percentFormatter = NumberFormat.getPercentInstance().apply {
-        roundingMode = RoundingMode.DOWN
         maximumFractionDigits = 0
     }
 
@@ -88,17 +86,20 @@ class LibraryUpdateNotifier(
      * @param total the total progress.
      */
     fun showProgressNotification(manga: List<Manga>, current: Int, total: Int) {
-        progressNotificationBuilder
-            .setContentTitle(
-                context.stringResource(
-                    MR.strings.notification_updating_progress,
-                    percentFormatter.format(current.toFloat() / total),
-                ),
-            )
-
-        if (!securityPreferences.hideNotificationContent().get()) {
+                if (preferences.hideNotificationContent().get()) {
+            progressNotificationBuilder
+                .setContentTitle(context.stringResource(MR.strings.notification_check_updates))
+                .setContentText("($current/$total)")
+        } else {
             val updatingText = manga.joinToString("\n") { it.title.chop(40) }
-            progressNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(updatingText))
+                        progressNotificationBuilder
+                .setContentTitle(
+                    context.stringResource(
+                        MR.strings.notification_updating_progress,
+                        percentFormatter.format(current.toFloat() / total),
+                    ),
+                )
+                .setStyle(NotificationCompat.BigTextStyle().bigText(updatingText))
         }
 
         context.notify(
