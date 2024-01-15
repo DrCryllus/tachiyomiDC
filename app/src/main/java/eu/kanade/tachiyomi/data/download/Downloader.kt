@@ -296,11 +296,7 @@ class Downloader(
                     queuedDownloads > DOWNLOADS_QUEUED_WARNING_THRESHOLD ||
                     maxDownloadsFromSource > CHAPTERS_PER_SOURCE_QUEUE_WARNING_THRESHOLD
                 ) {
-                    notifier.onWarning(
-                        context.stringResource(MR.strings.download_queue_size_warning),
-                        WARNING_NOTIF_TIMEOUT_MS,
-                        NotificationHandler.openUrl(context, LibraryUpdateNotifier.HELP_WARNING_URL),
-                    )
+                    notifier.onWarning()
                 }
                 DownloadJob.start(context)
             }
